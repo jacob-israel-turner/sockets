@@ -16,8 +16,7 @@ class App extends Component {
   }
   componentDidMount() {
     this.fetchChats()
-    this.socket = io(baseUrl)
-    this.socket.on('chat', this.updateChats.bind(this))
+    // Open socket
   }
   async fetchChats() {
     const {data: messages} = await axios.get(`${baseUrl}/messages`)
@@ -31,7 +30,8 @@ class App extends Component {
   }
   handleSubmit(e) {
     e.preventDefault()
-    this.socket.emit('chat', {message: this.state.message, userName: 'JACOB'})
+    // Send new message on socket
+    // We could also send the message over a regular HTTP call
     this.setState({message: ''})
   }
   renderMessages() {
