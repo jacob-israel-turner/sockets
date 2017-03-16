@@ -28,10 +28,17 @@ class App extends Component {
   handleInputChange({target:{value}}) {
     this.setState({message: value})
   }
-  handleSubmit(e) {
+  async handleSubmit(e) {
     e.preventDefault()
-    // Send new message on socket
-    // We could also send the message over a regular HTTP call
+    try {
+      await axios.post(`${baseUrl}/messages`, {
+        userName: 'Jacob Turner',
+        message: this.state.message
+      })
+      this.fetchChats()
+    } catch(e) {
+      console.warn('Error sending message', e)
+    }
     this.setState({message: ''})
   }
   renderMessages() {
