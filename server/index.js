@@ -2,12 +2,14 @@ import express from 'express'
 import cors from 'cors'
 import bodyParser from 'body-parser'
 import {Server} from 'http'
+import sio from 'socket.io'
 
 const app = express()
 const port = 9001
 let messages = []
 
 const http = Server(app)
+const io = sio(http)
 
 app.use(cors())
 app.use(bodyParser.json())
@@ -23,6 +25,12 @@ app.post('/messages', (req, res) => {
   }
 })
 
+io.on('connection', (socket) => {
+  const {id} = socket;
+  console.log(`Client with id ${id} connected!`)
+  socket.on('chat', () => addChat(socket, chat))
+})
+
 function addChat(chat) {
   const {userName, message} = chat;
   if (!userName, !message) throw new Erorr('INVALID MESSAGE')
@@ -31,7 +39,8 @@ function addChat(chat) {
     message,
     timestamp: new Date().getTime()
   })
-  console.log(`There are now ${messages.length} messages`)
+  console.log(`There are now ${messages.length} messages`);
+  io.emit('chat', messages[messages.length - 1])
 }
 
 http.listen(port, () => console.log(`Listening on port ${port}`))

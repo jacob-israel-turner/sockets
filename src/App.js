@@ -13,10 +13,13 @@ class App extends Component {
       messages: [],
       message: ''
     }
+    this.updateChats = this.updateChats.bind(this)
   }
   componentDidMount() {
     this.fetchChats()
     // Open socket
+    this.socket = io(baseUrl)
+    this.socket.on('chat', this.updateChats)
   }
   async fetchChats() {
     const {data: messages} = await axios.get(`${baseUrl}/messages`)
